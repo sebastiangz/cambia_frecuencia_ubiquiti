@@ -1,6 +1,6 @@
 # Cambio Automático de Frecuencia para Ubiquiti PowerBeam
 
-![Ubiquiti Logo]((https://th.bing.com/th/id/OIP.vNlFXFi2Vchk522bTf51FQHaBy?w=338&h=84&c=7&r=0&o=5&dpr=1.3&pid=1.7))
+![Ubiquiti Logo](images/ub6053u2d5-ubiquiti-logo-ubiquiti-logo-.png)
 
 ## 📡 Descripción
 
