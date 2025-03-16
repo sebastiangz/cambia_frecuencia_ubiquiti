@@ -32,15 +32,15 @@ El sistema monitorea continuamente la calidad del enlace (señal, CCQ, capacidad
 ```bash
 mkdir -p /home2/cambia_frecuencia_ubiquiti
 cd /home2/cambia_frecuencia_ubiquiti
-git clone [https://github.com/tu_usuario/cambia_frecuencia_ubiquiti](https://github.com/sebastiangz/cambia_frecuencia_ubiquiti/).git .
+git clone [[https://github.com/tu_usuario/cambia_frecuencia_ubiquiti](https://github.com/sebastiangz/cambia_frecuencia_ubiquiti)](https://github.com/sebastiangz/cambia_frecuencia_ubiquiti/).git .
 # O si no usas git, simplemente crea los archivos manualmente
 ```
 
 ### 2. Instalar dependencias básicas
 
 ```bash
-sudo apt update
-sudo apt install -y python3 python3-pip python3-venv
+sudo dnf update
+sudo dnf install -y python3 python3-pip python3-venv
 ```
 
 ### 3. Crear y activar un entorno virtual de Python
@@ -74,7 +74,7 @@ SLAVE_IP = "192.168.1.21"   # Cambiar a la IP de tu radio esclavo
 USERNAME = "ubnt"           # Usuario por defecto de Ubiquiti
 PASSWORD = "password"       # Cambiar a tu contraseña
 
-# Lista de frecuencias disponibles (en MHz)
+# Lista de frecuencias disponibles o que tú ulizas en elos radios PtP (en MHz)
 AVAILABLE_FREQUENCIES = [5665, 5675, 5685, 5695, 5710, 5760, 5780, 5830, 5835]
 ```
 
@@ -83,7 +83,7 @@ AVAILABLE_FREQUENCIES = [5665, 5675, 5685, 5695, 5710, 5760, 5780, 5830, 5835]
 Crea un archivo de servicio systemd para que el script se ejecute automáticamente:
 
 ```bash
-sudo nano /etc/systemd/system/frequency-switcher.service
+sudo vi /etc/systemd/system/frequency-switcher.service
 ```
 
 Copia y pega el siguiente contenido:
@@ -134,7 +134,7 @@ TX_CAPACITY_THRESHOLD = 50   # % - Si la capacidad de transmisión cae debajo de
 CHECK_INTERVAL = 300  # 5 minutos
 ```
 
-### Integración con UISP/UNMS
+### Integración con UISP/UNMS - Extra y para TODO
 
 Si utilizas UISP (antes conocido como UNMS) para gestionar tus dispositivos Ubiquiti, puedes modificar el script para usar la API de UISP:
 
