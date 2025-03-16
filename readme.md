@@ -32,7 +32,7 @@ El sistema monitorea continuamente la calidad del enlace (señal, CCQ, capacidad
 ```bash
 mkdir -p /home2/cambia_frecuencia_ubiquiti
 cd /home2/cambia_frecuencia_ubiquiti
-git clone https://github.com/tu_usuario/cambia_frecuencia_ubiquiti.git .
+git clone [https://github.com/tu_usuario/cambia_frecuencia_ubiquiti](https://github.com/sebastiangz/cambia_frecuencia_ubiquiti/).git .
 # O si no usas git, simplemente crea los archivos manualmente
 ```
 
