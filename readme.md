@@ -1,6 +1,6 @@
 # Cambio Automático de Frecuencia para Ubiquiti PowerBeam
 
-![Ubiquiti Logo](https://i.imgur.com/4xN5O8J.png)
+![Ubiquiti Logo]((https://th.bing.com/th/id/OIP.vNlFXFi2Vchk522bTf51FQHaBy?w=338&h=84&c=7&r=0&o=5&dpr=1.3&pid=1.7))
 
 ## 📡 Descripción
 
@@ -62,7 +62,7 @@ pip install paramiko requests
 Edita el archivo `frequency_switcher.py` para configurar tus dispositivos:
 
 ```bash
-nano frequency_switcher.py
+vi frequency_switcher.py
 ```
 
 Modifica las siguientes variables según tu configuración:
@@ -228,7 +228,7 @@ Este proyecto está licenciado bajo la licencia MIT - consulta el archivo LICENS
 
 ## 👥 Autor
 
-Creado originalmente por [Tu Nombre] - [Tu sitio web o perfil de GitHub]
+Creado para facilitar los procesos WISP por sebastiangz
 
 ---
 
