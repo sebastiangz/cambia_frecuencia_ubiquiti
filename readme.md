@@ -13,17 +13,18 @@ El sistema monitorea continuamente la calidad del enlace (señal, CCQ, capacidad
 - **Monitoreo continuo** de la calidad del enlace de radio
 - **Detección automática** de interferencias y degradación del enlace
 - **Selección inteligente** de las mejores frecuencias disponibles
-- **Escaneo del espectro** mediante AirView (cuando está disponible)
 - **Cambio sincronizado** de frecuencias entre dispositivos maestro y esclavo
-- **Funcionamiento como servicio** que se ejecuta automáticamente en el arranque
+- **Extracción robusta de datos** utilizando múltiples métodos (JSON, HTML, regex)
+- **Manejo avanzado de sesiones HTTP** para dispositivos con diferentes versiones de firmware
+- **Interfaz de línea de comandos** con múltiples opciones y herramientas de diagnóstico
 - **Logs detallados** para auditoría y solución de problemas
 
 ## ⚙️ Requisitos
 
 - Python 3.6 o superior
-- Acceso SSH a los radios Ubiquiti PowerBeam
-- Credenciales de administrador para los dispositivos
-- Radios PowerBeam M5 400 (u otros modelos compatibles de Ubiquiti)
+- Dispositivos Ubiquiti PowerBeam M5 configurados en modo punto a punto (PtP)
+- Acceso web a los dispositivos (usuario y contraseña)
+- Dependencias Python: requests, beautifulsoup4
 
 ## 📋 Guía de Instalación
 
@@ -54,7 +55,7 @@ source venv/bin/activate
 ### 4. Instalar dependencias en el entorno virtual
 
 ```bash
-pip install paramiko requests
+pip install requests beautifulsoup4
 ```
 
 ### 5. Configurar el script
@@ -74,7 +75,7 @@ SLAVE_IP = "192.168.1.21"   # Cambiar a la IP de tu radio esclavo
 USERNAME = "ubnt"           # Usuario por defecto de Ubiquiti
 PASSWORD = "password"       # Cambiar a tu contraseña
 
-# Lista de frecuencias disponibles o que tú ulizas en elos radios PtP (en MHz)
+# Lista de frecuencias disponibles (en MHz)
 AVAILABLE_FREQUENCIES = [5665, 5675, 5685, 5695, 5710, 5760, 5780, 5830, 5835]
 ```
 
@@ -118,7 +119,45 @@ sudo systemctl start frequency-switcher.service
 sudo systemctl status frequency-switcher.service
 ```
 
-## 🛠️ Configuración personalizada
+## 🛠️ Uso y opciones
+
+El script proporciona varias opciones para diferentes escenarios:
+
+### Ejecutar como servicio (modo continuo)
+
+```bash
+python frequency_switcher.py
+```
+
+### Mostrar estado actual
+
+```bash
+python frequency_switcher.py --status
+```
+
+### Probar extracción de datos
+
+```bash
+python frequency_switcher.py --extract
+```
+
+### Forzar cambio de frecuencia
+
+```bash
+python frequency_switcher.py --force-switch 5760
+```
+
+### Depurar formularios disponibles
+
+```bash
+python frequency_switcher.py --debug-forms master
+```
+o
+```bash
+python frequency_switcher.py --debug-forms slave
+```
+
+## 📐 Configuración personalizada
 
 ### Ajuste de parámetros de monitoreo
 
@@ -133,18 +172,6 @@ TX_CAPACITY_THRESHOLD = 50   # % - Si la capacidad de transmisión cae debajo de
 # Período entre verificaciones (en segundos)
 CHECK_INTERVAL = 300  # 5 minutos
 ```
-
-### Integración con UISP/UNMS - Extra y para TODO
-
-Si utilizas UISP (antes conocido como UNMS) para gestionar tus dispositivos Ubiquiti, puedes modificar el script para usar la API de UISP:
-
-1. Instala la biblioteca para la API de UISP (dentro del entorno virtual):
-   ```bash
-   source /home2/cambia_frecuencia_ubiquiti/venv/bin/activate
-   pip install uisp-client
-   ```
-
-2. Modifica el script para utilizar las funciones de la API de UISP.
 
 ## 📊 Monitoreo y logs
 
@@ -161,57 +188,60 @@ sudo systemctl status frequency-switcher.service
 journalctl -u frequency-switcher.service
 ```
 
+El script también genera archivos de depuración para diagnosticar problemas durante la extracción de datos y cambios de frecuencia. Estos archivos se guardan en el mismo directorio del script con nombres como:
+- `debug_login_[IP].html`
+- `debug_status.cgi_[IP].txt`
+- `debug_config_[URL]_[IP].html`
+- `debug_change_response_[IP].html`
+
 ## ❓ Solución de problemas
 
-### 1. El script no puede conectarse a los radios
+### El script no puede obtener información de los dispositivos
 
 - Verifica que las direcciones IP sean correctas
 - Comprueba que las credenciales sean válidas
-- Asegúrate de que haya conectividad de red con los radios
+- Utiliza el comando `--extract` para probar específicamente la extracción de datos
+- Revisa los archivos de depuración generados en el directorio del script
 
-### 2. Los cambios de frecuencia no persisten
+### Error al cambiar la frecuencia
 
-- Verifica que el comando para guardar la configuración (`cfgmtd -w -p /etc/`) funcione en tus dispositivos
-- Comprueba los logs para ver si hay errores
+- Utiliza el comando `--debug-forms` para analizar los formularios disponibles en el dispositivo
+- Revisa los logs y archivos de depuración para entender el problema
+- Intenta con el método alternativo usando `--force-switch` que intenta diferentes estrategias
 
-### 3. El servicio se detiene inesperadamente
+### No todos los datos se extraen correctamente
+
+- El script implementa múltiples métodos de extracción (JSON, HTML, regex)
+- Si algunos valores aparecen como "Desconocido", revisa los archivos de depuración generados
+- Considera usar niveles de log más detallados para diagnóstico avanzado
+
+### El servicio se detiene inesperadamente
 
 - Revisa los logs del sistema con `journalctl -u frequency-switcher.service`
-- Verifica que las dependencias de Python estén correctamente instaladas
+- Verifica que las dependencias de Python (requests, beautifulsoup4) estén correctamente instaladas
 
-### 4. Problemas con el entorno virtual
+## 🔄 Funcionamiento interno
 
-- Verifica que la ruta al intérprete de Python sea correcta en el archivo de servicio
-- Comprueba que todas las dependencias estén instaladas en el entorno virtual:
-  ```bash
-  source /home2/cambia_frecuencia_ubiquiti/venv/bin/activate
-  pip list | grep paramiko
-  pip list | grep requests
-  ```
-- Si es necesario, reinstala las dependencias:
-  ```bash
-  source /home2/cambia_frecuencia_ubiquiti/venv/bin/activate
-  pip install --upgrade paramiko requests
-  ```
+1. **Monitoreo**: El script verifica periódicamente la calidad del enlace (señal, CCQ, capacidad TX)
+2. **Detección**: Si algún parámetro cae por debajo de los umbrales durante 3 verificaciones consecutivas, inicia el cambio
+3. **Selección**: Elige una nueva frecuencia de la lista de frecuencias disponibles
+4. **Cambio**: Primero cambia el esclavo, espera a que se estabilice, luego cambia el maestro
+5. **Verificación**: Confirma que el cambio se aplicó correctamente en ambos dispositivos
 
-## 🔄 Actualización
-
-Para actualizar el script en el futuro:
-
-```bash
-cd /home2/cambia_frecuencia_ubiquiti
-source venv/bin/activate
-# Edita el archivo según sea necesario
-nano frequency_switcher.py
-# Reinicia el servicio
-sudo systemctl restart frequency-switcher.service
-```
+El proceso de cambio de frecuencia sigue estos pasos:
+1. Inicio de sesión en el dispositivo usando credenciales de acceso web
+2. Identificación de la página correcta que contiene los controles de frecuencia
+3. Análisis de los formularios y campos para encontrar los parámetros de frecuencia
+4. Envío de la solicitud de cambio con los parámetros correctos
+5. Manejo de posibles formularios de confirmación o reinicio de interfaz
+6. Verificación del cambio exitoso
 
 ## 📝 Notas importantes
 
-- Este script depende del acceso SSH a los dispositivos Ubiquiti, asegúrate de que el SSH esté habilitado en los radios
-- Los comandos pueden variar ligeramente según la versión del firmware de tus dispositivos
-- Para un funcionamiento óptimo, configura una lista limitada de frecuencias que sepas que funcionan bien en tu entorno
+- El script está optimizado para PowerBeam M5 pero puede funcionar con otros modelos Ubiquiti
+- Cada cambio de frecuencia genera una breve interrupción en el enlace (minimizada por la estrategia de cambio)
+- Los archivos de depuración se acumulan en el directorio de ejecución y pueden requerir limpieza periódica
+- El script no realiza un análisis espectral completo; selecciona frecuencias de una lista predefinida
 
 ## 🤝 Contribuir
 
