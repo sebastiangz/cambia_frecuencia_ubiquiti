@@ -5,8 +5,8 @@ Este script monitorea la calidad del enlace y cambia automáticamente la frecuen
 cuando detecta interferencia o degradación de la señal.
 """
 # Configuración de dispositivos
-MASTER_IP = "192.168.40.17"  # Cambiar a la IP de tu radio maestro
-SLAVE_IP = "192.168.40.18"   # Cambiar a la IP de tu radio esclavo
+MASTER_IP = "10.20.5.17"  # Cambiar a la IP de tu radio maestro
+SLAVE_IP = "10.20.5.18"   # Cambiar a la IP de tu radio esclavo
 USERNAME = "ubnt"           # Usuario por defecto de Ubiquiti
 PASSWORD = "tupassword"       # Cambiar a tu contraseña
 
